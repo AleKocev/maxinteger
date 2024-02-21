@@ -81,11 +81,13 @@
       })
         .then(response => response.json())
         .then(data => {
+          console.log(data);
           displayResults(data.results);
           displayMaxIntegerResult(data.results[0]);
           calculateAverageExecutionTime(data.results);
         })
         .catch(error => {
+          console.log(response);
           console.error('Error:', error);
           alert('An error occurred while fetching the result.');
         });
@@ -95,7 +97,7 @@
       const resultTable = document.getElementById('resultTable').querySelector('tbody');
 
       resultTable.innerHTML = '';
-
+      console.log('displayResults');
       results.forEach(({ iteration, threshold, executionTime }) => {
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
