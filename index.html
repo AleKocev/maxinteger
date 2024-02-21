@@ -75,7 +75,7 @@
       formData.append('file', file);
       formData.append('threshold', threshold);
 
-      fetch('http://localhost:3000/calculateMaxInteger', {
+      fetch('https://sls-eus-dev-azfx-node-http.azurewebsites.net', {
         method: 'POST',
         body: formData,
       })
