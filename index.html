@@ -75,7 +75,7 @@
       formData.append('file', file);
       formData.append('threshold', threshold);
 
-      fetch('https://sls-eus-dev-azfx-node-http.azurewebsites.net', {
+      fetch('https://sls-eus-dev-azfx-node-http.azurewebsites.net/api/maxinteger_bck.js', {
         method: 'POST',
         body: formData,
       })
