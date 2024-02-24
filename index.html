@@ -75,7 +75,7 @@
       formData.append('file', file);
       formData.append('threshold', threshold);
 
-      fetch('https://sls-eus-dev-azfx-node-http.azurewebsites.net/api/maxinteger_bck', {
+      fetch('https://sls-eus-dev-azfx-node-http.azurewebsites.net/api/calculateMaxInteger', {
         method: 'POST',
         body: formData,
       })
