@@ -31,7 +31,7 @@
         },
         body: JSON.stringify({ name: name })
       })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(data => {
           document.getElementById('responseMessage').innerText = data.body;
         })
