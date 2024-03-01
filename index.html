@@ -3,47 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTTP Trigger Function</title>
+  <title>Max Integer Finder</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 50%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>HTTP Trigger Function</h1>
+  <h1>Max Integer Finder</h1>
 
-  <form id="functionForm">
-    <label for="nameInput">Enter your name:</label>
-    <input type="text" id="nameInput" name="name" required>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <label for="fileInput">Choose a file:</label>
+    <input type="file" id="fileInput" accept=".txt" required>
     <br>
-    <button type="submit">Submit</button>
+    <label for="thresholdInput">Threshold value:</label>
+    <input type="number" id="thresholdInput" required>
+    <br>
+    <button type="button" onclick="calculateMaxIntegerAndFetch()">Calculate Max Integer</button>
   </form>
 
-  <div id="responseMessage"></div>
+  <div id="maxIntegerResult" style="display: none;">
+    <h2>Max Integer Result:</h2>
+    <p id="maxIntegerLocation"></p>
+    <p id="maxIntegerValue"></p>
+  </div>
+
+  <div id="result">
+    <h2>Execution Time Result:</h2>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>Iteration</th>
+          <th>Threshold Value</th>
+          <th>Execution Time (s)</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Average Execution Time (s):</td>
+          <td id="averageTime"></td>
+        </tr>
+      </tfoot>
+    </table>
+    <button type="button" onclick="downloadTableAsCSV()">Download Table as CSV</button>
+  </div>
 
   <script>
-    document.getElementById('functionForm').addEventListener('submit', function(event) {
-      event.preventDefault();
+    function calculateMaxIntegerAndFetch() {
+      const fileInput = document.getElementById('fileInput');
+      const thresholdInput = document.getElementById('thresholdInput');
 
-      const name = document.getElementById('nameInput').value;
+      const file = fileInput.files[0];
+      const threshold = parseInt(thresholdInput.value, 10);
 
-      fetch('https://helloworld123.azurewebsites.net/api/HttpTrigger1?code=NU8fzAo0rZVpQMZwr2WqzR_seZdCh9yuW1-BLXp2REiZAzFuIoXm0w==', {
+      if (!file || isNaN(threshold)) {
+        alert('Please select a file and enter a valid threshold value.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('threshold', threshold);
+
+      fetch('https://proba2202.azurewebsites.net/api/server?code=M760svUYokKDypiHleXALUXjhl2_QpEQRI_C-5XTffhoAzFufadR9Q==', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name: name })
+        body: formData,
       })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {
-          document.getElementById('responseMessage').innerText = data;
+          console.log(data);
+          displayResults(data.results);
+          displayMaxIntegerResult(data.results[0]);
+          calculateAverageExecutionTime(data.results);
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('An error occurred while processing the request.');
+          alert('An error occurred while fetching the result.');
         });
-    });
+    }
+
+    function displayResults(results) {
+      const resultTable = document.getElementById('resultTable').querySelector('tbody');
+
+      resultTable.innerHTML = '';
+      console.log('displayResults');
+      results.forEach(({ iteration, threshold, executionTime }) => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <td>${iteration}</td>
+          <td>${threshold}</td>
+          <td>${(executionTime / 1000).toFixed(2)}</td>
+        `;
+        resultTable.appendChild(newRow);
+      });
+    }
+
+    function displayMaxIntegerResult(maxIntegerResult) {
+      const maxIntegerLocation = document.getElementById('maxIntegerLocation');
+      const maxIntegerValue = document.getElementById('maxIntegerValue');
+
+      maxIntegerLocation.textContent = `Max Integer Location: ${maxIntegerResult.maxLineNumber}`;
+      maxIntegerValue.textContent = `Max Integer Value: ${maxIntegerResult.maxInteger}`;
+
+      const maxIntegerResultDiv = document.getElementById('maxIntegerResult');
+      maxIntegerResultDiv.style.display = 'block';
+    }
+
+    function calculateAverageExecutionTime(results) {
+      const executionTimes = results.map(result => result.executionTime);
+      const averageTime = executionTimes.reduce((total, time) => total + time, 0) / executionTimes.length;
+
+      document.getElementById('averageTime').textContent = (averageTime / 1000).toFixed(2);
+    }
+
+    function downloadTableAsCSV() {
+      const table = document.getElementById('resultTable');
+      const rows = table.querySelectorAll('tr');
+      let csv = '';
+
+      rows.forEach(row => {
+        Array.from(row.cells).forEach((cell, index) => {
+          csv += cell.textContent;
+          if (index < row.cells.length - 1) {
+            csv += ',';
+          } else {
+            csv += '\n';
+          }
+        });
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'result_table.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   </script>
 
 </body>
 </html>
-
 
 
