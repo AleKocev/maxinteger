@@ -79,12 +79,13 @@
         method: 'POST',
         body: formData,
       })
-        .then(response => response.json())
+        .then(response => response.text())
         .then(data => {
           console.log(data);
-          displayResults(data.results);
-          displayMaxIntegerResult(data.results[0]);
-          calculateAverageExecutionTime(data.results);
+          const parsedData = JSON.parse(data);
+          displayResults(parsedData.results);
+          displayMaxIntegerResult(parsedData.results[0]);
+          calculateAverageExecutionTime(parsedData.results);
         })
         .catch(error => {
           console.error('Error:', error);
@@ -155,5 +156,6 @@
 
 </body>
 </html>
+
 
 
