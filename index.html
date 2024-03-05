@@ -23,7 +23,7 @@
             formData.append('file', document.getElementById('fileInput').files[0]);
             formData.append('threshold', document.getElementById('thresholdInput').value);
             
-            const response = await fetch('https://maxinteger.azurewebsites.net/api/server?code=ehbWwIhPtdym6cp5VQnp535kq6qrr3co6svsvbP87FnCAzFutAIihg==', {
+            const response = await fetch('https://sls-eus-dev-azfx-node-http.azurewebsites.net/api/maxinteger_bck', {
                 method: 'POST',
                 body: formData
             });
